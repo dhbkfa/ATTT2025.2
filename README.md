@@ -66,7 +66,7 @@ Mở terminal tại thư mục chứa code và chạy lệnh sau:
 
 ```bash
 # 1. Biên dịch file test
-g++ SubBytes.cpp SubBytes_test.cpp -o test_runner
+g++ SubBytes_TestCode/SubBytes_test.cpp SubBytes_Code/SubBytes.cpp -o test_runner
 # 2. Chạy file thực thi
 ./test_runner
 

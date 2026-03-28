@@ -2,8 +2,7 @@
 #include <iomanip>
 #include <cstdint>
 #include <cstring>
-#include "SubBytes.hpp"
-
+#include "../SubBytes_Code/SubBytes.hpp"
 using namespace std;
 
 // So sánh 2 mảng 32-bit xem có khớp nhau 100% không
