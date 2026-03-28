@@ -1,62 +1,80 @@
 #include <iostream>
-#include <iomanip>
 #include <cstdint>
+#include <iomanip>
 
-// 1. Hàm AddRoundKey: Thực hiện XOR từng byte của State với RoundKey
-void AddRoundKey(uint8_t state[16], const uint8_t roundKey[16]) {
-    for (int i = 0; i < 16; i++) {
-        state[i] ^= roundKey[i]; // Phép toán XOR bitwise (^)
+// 1. Hàm ghép 4 byte thành 1 word 32-bit (Đại diện cho 1 Cột trong State)
+// Chuẩn FIPS-197 AES: b0 là byte trên cùng của cột (MSB), b3 là byte dưới cùng (LSB)
+uint32_t packBytesToWord(uint8_t b0, uint8_t b1, uint8_t b2, uint8_t b3) {
+    return (static_cast<uint32_t>(b0) << 24) |
+           (static_cast<uint32_t>(b1) << 16) |
+           (static_cast<uint32_t>(b2) << 8)  |
+           (static_cast<uint32_t>(b3));
+}
+
+// 2. Hàm AddRoundKey siêu tốc: XOR 4 word 32-bit thay vì 16 byte
+// Đầu vào lúc này là mảng 4 phần tử 32-bit (chính là 4 cột của ma trận State)
+void AddRoundKey(uint32_t state[4], const uint32_t roundKey[4]) {
+    for (int i = 0; i < 4; i++) {
+        state[i] ^= roundKey[i]; // Mỗi lần XOR sẽ xử lý trọn vẹn 1 cột (4 byte) cùng lúc
     }
 }
 
-// 2. Hàm hỗ trợ in mảng 16 byte ra màn hình dưới dạng Hex
-void printHexArray(const uint8_t arr[16], const char* label) {
-    std::cout << label << ": ";
-    for (int i = 0; i < 16; i++) {
-        // In định dạng Hex, luôn hiển thị 2 chữ số
-        std::cout << std::hex << std::uppercase << std::setw(2) << std::setfill('0') 
-                  << static_cast<int>(arr[i]) << " ";
+// Hàm hỗ trợ in mảng 4 word ra dạng ma trận Hex 16 byte để dễ đối chiếu
+void printStateAsHex(const uint32_t state[4], const char* label) {
+    std::cout << label << ":\n";
+    for (int i = 0; i < 4; i++) {
+        std::cout << "  Cot " << i << " (Word " << i << "): 0x" 
+                  << std::hex << std::uppercase << std::setw(8) << std::setfill('0') 
+                  << state[i] << std::endl;
     }
-    std::cout << std::dec << std::endl; // Trả lại định dạng thập phân
+    std::cout << std::dec; // Trả lại định dạng thập phân
 }
 
-// 3. Hàm main để chạy thử nghiệm
 int main() {
-    // TEST VECTOR CHUẨN TỪ NIST (Phụ lục B - FIPS 197)
+    // TEST VECTOR CHUẨN TỪ NIST (AES-128, Round 0)
     
-    // Plaintext (trạng thái đầu vào)
-    uint8_t state[16] = {
-        0x00, 0x11, 0x22, 0x33, 
-        0x44, 0x55, 0x66, 0x77, 
-        0x88, 0x99, 0xAA, 0xBB, 
-        0xCC, 0xDD, 0xEE, 0xFF
+    // 1. Giả sử đây là luồng 16 byte dữ liệu thô ban đầu (Plaintext)
+    uint8_t rawState[16] = {
+        0x00, 0x11, 0x22, 0x33, // Cột 0
+        0x44, 0x55, 0x66, 0x77, // Cột 1
+        0x88, 0x99, 0xAA, 0xBB, // Cột 2
+        0xCC, 0xDD, 0xEE, 0xFF  // Cột 3
     };
 
-    // Khóa gốc (Cipher Key) - Trong Round 0, Round Key chính là Khóa gốc
-    uint8_t roundKey[16] = {
-        0x00, 0x01, 0x02, 0x03, 
-        0x04, 0x05, 0x06, 0x07, 
-        0x08, 0x09, 0x0A, 0x0B, 
-        0x0C, 0x0D, 0x0E, 0x0F
+    // 2. Luồng 16 byte Khóa gốc (Cipher Key)
+    uint8_t rawKey[16] = {
+        0x00, 0x01, 0x02, 0x03, // Cột 0
+        0x04, 0x05, 0x06, 0x07, // Cột 1
+        0x08, 0x09, 0x0A, 0x0B, // Cột 2
+        0x0C, 0x0D, 0x0E, 0x0F  // Cột 3
     };
 
-    std::cout << "--- TRUOC KHI AddRoundKey (Vong 0) ---\n";
-    printHexArray(state, "State vao");
-    printHexArray(roundKey, "Round Key");
+    // Khai báo mảng 32-bit cho State và RoundKey
+    uint32_t state[4];
+    uint32_t roundKey[4];
 
-    // Gọi hàm AddRoundKey
+    // BƯỚC ĐÓNG GÓI (PACKING): Gom 16 byte thành 4 cột 32-bit
+    for (int i = 0; i < 4; i++) {
+        // Lấy 4 byte liên tiếp ghép thành 1 word
+        state[i] = packBytesToWord(rawState[i*4], rawState[i*4 + 1], rawState[i*4 + 2], rawState[i*4 + 3]);
+        roundKey[i] = packBytesToWord(rawKey[i*4], rawKey[i*4 + 1], rawKey[i*4 + 2], rawKey[i*4 + 3]);
+    }
+
+    std::cout << "--- TRUOC KHI AddRoundKey ---\n";
+    printStateAsHex(state, "State ban dau");
+    printStateAsHex(roundKey, "Round Key");
+
+    // BƯỚC THỰC THI CHÍNH
     AddRoundKey(state, roundKey);
 
     std::cout << "\n--- SAU KHI AddRoundKey ---\n";
-    printHexArray(state, "State ra "); 
+    printStateAsHex(state, "State ket qua");
 
-    /* * KẾT QUẢ KỲ VỌNG:
-     * 00 10 20 30 40 50 60 70 80 90 A0 B0 C0 D0 E0 F0
-     * * Giải thích: 
-     * Byte 1: 0x00 ^ 0x00 = 0x00
-     * Byte 2: 0x11 ^ 0x01 = 0x10
-     * Byte 3: 0x22 ^ 0x02 = 0x20
-     * ...
+    /* KẾT QUẢ KỲ VỌNG (Đúng chuẩn NIST):
+     * Cột 0: 0x00102030
+     * Cột 1: 0x40506070
+     * Cột 2: 0x8090A0B0
+     * Cột 3: 0xC0D0E0F0
      */
 
     return 0;
