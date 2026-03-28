@@ -22,7 +22,7 @@ Project_ATTT_AES/
 ## Cách chạy code
 Mở terminal tại thư mục gốc `Project_ATTT_AES` và chạy:
 ```bash
-gcc Shift_Rows_Code/shift_Rows.c Test_Code/test_shift_Rows.c -I Shift_Rows_Code -o test_runner
+g++ Shift_Rows_Code/shift_Rows.cpp Test_Code/test_shift_Rows.cpp -I Shift_Rows_Code -o test_runner
 ./test_runner
 ```
 
