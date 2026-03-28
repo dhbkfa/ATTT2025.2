@@ -59,7 +59,6 @@ uint32_t* subBytes(uint32_t state[4]) {
                    (static_cast<uint32_t>(b2) << 8)  |
                    (static_cast<uint32_t>(b3));
     }
-    // Trả về con trỏ state để hỗ trợ lồng hàm: shiftRows(subBytes(state))
     return state;
 }
 
