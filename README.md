@@ -42,9 +42,9 @@ g++ Shift_Rows_Code/shift_Rows.cpp Test_Code/test_shift_Rows.cpp -I Shift_Rows_C
 [Test case 2 ] All-zero input ........... PASS
 [Test case 3 ] All-same-byte ............ PASS
 [Test case 4 ] Row 0 unchanged .......... PASS
-[Test case 5 ] Row 1 shift left 1 ...... PASS
-[Test case 6 ] Row 2 shift left 2 ...... PASS
-[Test case 7 ] Row 3 shift left 3 ...... PASS
+[Test case 5 ] Row 1 shift left 1 ....... PASS
+[Test case 6 ] Row 2 shift left 2 ....... PASS
+[Test case 7 ] Row 3 shift left 3 ....... PASS
 [Test case 8 ] shift -> inv shift ....... PASS
 [Test case 9 ] inv shift -> shift ....... PASS
 [Test case 10] shiftRows x4 ............. PASS
