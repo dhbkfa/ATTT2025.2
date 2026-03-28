@@ -2,7 +2,7 @@
 #include <iomanip>
 #include <cstdint>
 #include <cstring>
-#include "SubBytes.hpp"
+#include "SubBytes.h"
 
 using namespace std;
 

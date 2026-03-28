@@ -1,7 +1,8 @@
 CC = g++
+SRCS	= main.cpp ./SubBytes_Code/SubBytes.cpp
 all: main
-main: main.cpp
-	$(CC) -o main main.cpp
+main: $(SRCS)
+	$(CC) -I. -o main $(SRCS)
 	./main
 
 clean:

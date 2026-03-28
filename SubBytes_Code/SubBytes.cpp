@@ -1,6 +1,5 @@
-#include "sub_Bytes.hpp"
-
-// Bảng S-box chuẩn FIPS-197: Ánh xạ phi tuyến
+#include "../main.h"
+// Bảng Sbox chuẩn FIPS-197: Ánh xạ phi tuyến
 static const uint8_t sbox[256] = {
     0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76,
     0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0,
@@ -39,30 +38,32 @@ static const uint8_t rsbox[256] = {
     0xa0, 0xe0, 0x3b, 0x4d, 0xae, 0x2a, 0xf5, 0xb0, 0xc8, 0xeb, 0xbb, 0x3c, 0x83, 0x53, 0x99, 0x61,
     0x17, 0x2b, 0x04, 0x7e, 0xba, 0x77, 0xd6, 0x26, 0xe1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0c, 0x7d
 };
+uint32_t subword(uint32_t word)
+{
+    // BƯỚC 1: Bóc tách từng byte từ thanh ghi 32-bit và Tra bảng S-box
+    // (word >> 24) & 0xFF: Dịch phải để lấy byte cao nhất, dùng mask 0xFF lọc lấy 8-bit
+    uint8_t b0 = sbox[(word >> 24) & 0xFF]; // Byte hàng 0
+    uint8_t b1 = sbox[(word >> 16) & 0xFF]; // Byte hàng 1
+    uint8_t b2 = sbox[(word >> 8)  & 0xFF]; // Byte hàng 2
+    uint8_t b3 = sbox[word         & 0xFF]; // Byte hàng 3
 
-uint32_t* subBytes(uint32_t state[4]) {
+    // BƯỚC 2: Đóng gói lại thành khối 32-bit và ghi đè vào cột cũ
+    // Dùng static_cast<uint32_t> để đảm bảo phép dịch trái (<<) không bị tràn dữ liệu
+    word = (static_cast<uint32_t>(b0) << 24) |
+                (static_cast<uint32_t>(b1) << 16) |
+                (static_cast<uint32_t>(b2) << 8)  |
+                (static_cast<uint32_t>(b3));
+    return word;
+
+}
+void subBytes(uint32_t state[4]) {
     // Duyệt qua 4 cột của ma trận State (mỗi cột là 1 phần tử 32-bit)
     for (int i = 0; i < 4; i++) {
-        uint32_t word = state[i];
-        
-        // BƯỚC 1: Bóc tách từng byte từ thanh ghi 32-bit và Tra bảng S-box
-        // (word >> 24) & 0xFF: Dịch phải để lấy byte cao nhất, dùng mask 0xFF lọc lấy 8-bit
-        uint8_t b0 = sbox[(word >> 24) & 0xFF]; // Byte hàng 0
-        uint8_t b1 = sbox[(word >> 16) & 0xFF]; // Byte hàng 1
-        uint8_t b2 = sbox[(word >> 8)  & 0xFF]; // Byte hàng 2
-        uint8_t b3 = sbox[word         & 0xFF]; // Byte hàng 3
-
-        // BƯỚC 2: Đóng gói lại thành khối 32-bit và ghi đè vào cột cũ
-        // Dùng static_cast<uint32_t> để đảm bảo phép dịch trái (<<) không bị tràn dữ liệu
-        state[i] = (static_cast<uint32_t>(b0) << 24) |
-                   (static_cast<uint32_t>(b1) << 16) |
-                   (static_cast<uint32_t>(b2) << 8)  |
-                   (static_cast<uint32_t>(b3));
+       state[i] = subword(state[i]);
     }
-    return state;
 }
 
-uint32_t* invSubBytes(uint32_t state[4]) {
+void invSubBytes(uint32_t state[4]) {
     // Logic giải mã tương tự mã hóa, chỉ thay đổi bảng tra cứu từ sbox sang rsbox
     for (int i = 0; i < 4; i++) {
         uint32_t word = state[i];
@@ -77,5 +78,4 @@ uint32_t* invSubBytes(uint32_t state[4]) {
                    (static_cast<uint32_t>(b2) << 8)  |
                    (static_cast<uint32_t>(b3));
     }
-    return state;
 }
