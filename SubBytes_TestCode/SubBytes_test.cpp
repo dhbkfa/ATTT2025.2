@@ -51,7 +51,7 @@ void test04_all_ones() {
 }
 
 // Test 05: Tính thuận nghịch (Reversibility) - Mã hóa xong giải mã phải ra dữ liệu gốc
-// Bài test này áp dụng luôn cú pháp lồng hàm (Chaining): invSubBytes(subBytes(state))
+// Bài test này áp dụng luôn cú pháp lồng hàm (Chaining): invSubBytes(subBytes(state)).
 void test05_forward_then_inverse() {
     uint32_t original[4] = {0x11223344, 0x55667788, 0x99AABBCC, 0xDDEEFF00};
     uint32_t state[4]; memcpy(state, original, 16);
@@ -67,7 +67,7 @@ void test06_inverse_then_forward() {
     print_result("Test 06: Giai ma -> Ma hoa (Thuan nghich)", check_equal(state, original));
 }
 
-// Test 07: Kiểm tra xem hàm có thực sự làm biến đổi dữ liệu hay không 
+// Test 07: Kiểm tra xem hàm có thực sự làm biến đổi dữ liệu hay không
 void test07_idempotence_check() {
     uint32_t original[4] = {0x12345678, 0x9ABCDEF0, 0x13579BDF, 0x2468ACE0};
     uint32_t state[4]; memcpy(state, original, 16);
@@ -83,7 +83,7 @@ void test08_inv_zero_mapping() {
     print_result("Test 08: Anh xa nguoc S-box (63 -> 00)", check_equal(state, expected));
 }
 
-// Test 09: Kiểm tra xem hàm có trả về đúng con trỏ của mảng state không 
+// Test 09: Kiểm tra xem hàm có trả về đúng con trỏ của mảng state không
 void test09_pointer_return_check() {
     uint32_t state[4] = {0};
     uint32_t* ptr = subBytes(state);
