@@ -1,0 +1,13 @@
+*.exe
+*.out
+*.o
+*.obj
+
+output/
+build/
+
+.vscode/
+*.code-workspace
+
+*.log
+*.tmp
