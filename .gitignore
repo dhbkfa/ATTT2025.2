@@ -1,0 +1,13 @@
+bin/
+obj/
+
+*.depend
+*.layout
+
+*.exe
+*.o
+*.out
+
+# File hệ thống
+.DS_Store
+Thumbs.db
