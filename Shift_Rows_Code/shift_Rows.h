@@ -2,8 +2,11 @@
 #define SHIFT_ROWS_H
 
 #include <stdint.h>
+#include <array>
 
-void shiftRows(uint8_t state[4][4]);
-void invShiftRows(uint8_t state[4][4]);
+using namespace std;
+
+array<uint32_t, 4> shiftRows(array<uint32_t, 4> w);
+array<uint32_t, 4> invShiftRows(array<uint32_t, 4> w);
 
 #endif
