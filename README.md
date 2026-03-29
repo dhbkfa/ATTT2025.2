@@ -1,6 +1,19 @@
 
 #Du an cua nhom 4
+Ma hoa thong tin voi AES
+INPUT : Khoa + Thong tin
+OUTPUT : CiPHER_TEXT
+Huong dan thuc hien thuat toan 
++ B1 : Vao Folder ATTT_2025.2
++ B2 : Mo terminal go "make"
++ B3 : Nhap thong tin va khoa
++ B4 : Xem thong tin Cipher text tren man hinh
 
+
+
+
+
+Huong dan ly thuyet thong tin tung phan
 
 #Module 1: Substitute Bytes (SubBytes): Thay thế Byte
 1. Tổng quan thuật toán
