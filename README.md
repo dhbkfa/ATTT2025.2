@@ -6,10 +6,13 @@ OUTPUT : CiPHER_TEXT
 Huong dan thuc hien thuat toan 
 + B1 : Vao Folder ATTT_2025.2
 + B2 : Mo terminal go "make"
-+ B3 : Nhap thong tin va khoa
-+ B4 : Xem thong tin Cipher text tren man hinh
++ B3 : Chon Ma hoa Hoac giai ma
++ B4 : Nhap thong tin text va key doi voi ma hoa 
+       Nhap thong tin ciphertext va key doi voi giai ma
++ B4 : Xem thong tin Cipher text tren man hinh (Ma hoa)
+       Hoac xem thong tin text tren man hinh (Giai ma) 
 
-
+==> Du an da hoan thanh (Co the bo sung de phu hop cho cac du an can ma hoa )
 
 
 
