@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <iomanip>
 #include <sstream>
+#include <cctype>
 #include "main.h"
 using namespace std;
 /*Xac dinh yeu cau : Ma hoa theo AES
@@ -52,38 +53,6 @@ void XOR_text(uint32_t text1[4],uint32_t text2[4],uint32_t result[4])
     
     
 }
-
-// Tach 8 ki tu trong text thanh 1 gia tri trong mang gom 4 phan tu
-bool khoitao()
- {
-    string text_check = text; // bien xu li text
-    string key_check = key;
-    if (text_check.length() != 32)
-    {
-        cout << "Loi : chuoi chua du 128 bit";
-        return false; 
-    }
-    for (int i = 0; i < 4; i++)
-    {
-        string cut_text = text_check.substr(i*8,8); // Cat chuoi 8 ki tu trong mang text_check
-        words[i] = static_cast<uint32_t>(stoul(cut_text,nullptr,16));
-
-
-    }
-    for (int j = 0; j < 4; j++)
-    {
-        string cut_key = key_check.substr(j*8,8); // Cat chuoi 8 ki tu trong mang text_check
-        keys[j] = static_cast<uint32_t>(stoul(cut_key,nullptr,16));
-
-
-    }
-    
-    return true;
-    
-
-
-    
- }
  // Ham xu li khoa tung loop
 void AddRoundKey(uint32_t key[4],int i)
 {
@@ -116,7 +85,16 @@ void in_ketqua(uint32_t x[4],const string& text)
     }
     
 }
-
+// Kiem tra dinh dang chuan cua hex
+bool CheckDinhDangdulieu(const string& str)
+{
+   if (str.empty())
+   {
+    return true;
+   }
+   return str.find_first_not_of("0123456789ABCDEFabcdef") != string::npos;
+    
+}
 int main()
 {
     char choose;
@@ -143,12 +121,22 @@ int main()
             cin >> infor_text ;
             cout << "\nDat khoa (y/c:128bit): ";
             cin >> infor_key;
-            if (infor_text.length() != 32 | infor_key.length() != 32)
+            bool lenError = (infor_text.length() != 32 || infor_key.length() != 32);
+            bool formatError = (CheckDinhDangdulieu(infor_text) || CheckDinhDangdulieu(infor_key));
+
+            if (lenError)
             {
-                cout << "\nLoi : chuoi chua du 128 bit";
-                cout << "\nYeu can nhap lai!";
+                cout << "\n[Loi] Chuoi chua du hoac vuot qua 32 ki tu (128 bit).";
             }
-        } while (infor_text.length() != 32 & infor_key.length() != 32);
+            if (formatError)
+            {
+                cout << "\n[Loi] Chuoi chua ki tu khong hop le! Chi chap nhan 0-9 va A-F.";
+            }
+            if (lenError || formatError)
+            {
+                cout << "\nVui long nhap lai!\n";
+            }
+        } while (infor_text.length() != 32 || infor_key.length() != 32 || CheckDinhDangdulieu(infor_text) || CheckDinhDangdulieu(infor_key));
              
         text = infor_text;
         key  = infor_key;
@@ -219,13 +207,23 @@ int main()
             cin >> infor_ciphertext ;
             cout << "\nDat khoa (y/c:128bit): ";
             cin >> infor_key;
-            if (infor_ciphertext.length() != 32 | infor_key.length() != 32)
+            bool lenError = (infor_ciphertext.length() != 32 || infor_key.length() != 32);
+            bool formatError = (CheckDinhDangdulieu(infor_ciphertext) || CheckDinhDangdulieu(infor_key));
+
+            if (lenError)
             {
-                cout << "\nLoi : chuoi chua du 128 bit";
-                cout << "\nYeu can nhap lai!";
+                cout << "\n[Loi] Chuoi chua du hoac vuot qua 32 ki tu (128 bit).";
+            }
+            if (formatError)
+            {
+                cout << "\n[Loi] Chuoi chua ki tu khong hop le! Chi chap nhan 0-9 va A-F.";
+            }
+            if (lenError || formatError)
+            {
+                cout << "\nVui long nhap lai!\n";
             }
             
-        } while (infor_ciphertext.length() != 32 & infor_key.length() != 32 );
+        } while (infor_ciphertext.length() != 32 || infor_key.length() != 32 || CheckDinhDangdulieu(infor_ciphertext) || CheckDinhDangdulieu(infor_key));
          for (int i = 0; i < 4; i++)
         {
             string cut_text = infor_ciphertext.substr(i*8,8); // Cat chuoi 8 ki tu trong mang text_check
