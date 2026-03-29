@@ -11,8 +11,11 @@ using namespace std;
     + Key : 2B7E1516 28AED2A6 ABF71588 09CF4F3C
     +Output:3925841D 02DC09FB ABF71588 196A0B32
 */ 
-string text = "3243F6A8885A308D313198A2E0370734";
-string key = "2B7E151628AED2A6ABF7158809CF4F3C";
+//text = "3243F6A8885A308D313198A2E0370734"
+//key = "2B7E151628AED2A6ABF7158809CF4F3C"
+// C = 3925841D02DC09FBDC118597196A0B32
+string text;
+string key;
 uint32_t words[4];
 uint32_t keys[4];
 uint32_t results[4];
@@ -74,7 +77,7 @@ bool khoitao()
 
 
     }
-    XOR_text(words,keys,results);
+    
     return true;
     
 
@@ -116,71 +119,301 @@ void in_ketqua(uint32_t x[4],const string& text)
 
 int main()
 {
-
-
-
-
-    string infor_text;
-    string infor_key;
-    cout << "\nNhap thong tin ban can ma hoa(y/c:128bit) : ";
-    cin >> infor_text ;
-    cout << "\nDat khoa (y/c:128bit): ";
-    cin >> infor_key;
-    text = infor_text;
-    key  = infor_key;
-    if (!khoitao())
+    char choose;
+    cout << "Hello ! Chao ban den voi Chuong trinh ma hoa va giai ma AES ";
+    cout << "\nThuat toan duoc Xay dung boi nhom hieule(Nhom Truong)";
+    cout << "Vui long chon che do Ma hoa or Giai ma AES!";
+    do
     {
-        cout << "\nDau vao khong hop le!";
-        return 0;
-    }
-    in_ketqua(results,"hien thi ket qua khoi tao : ");
-    // Thuat toan ma hoa AES
-    for (int i = 1; i < 10; i++)
+        cout << "\nNeu chon Ma hoa nhan 'Y' , chon Giai ma nhan 'N' : ";
+        cin >> choose;
+        if (choose != 'N' && choose != 'Y')
+        {
+            cout << "\nVui long nhap lai , chua dung dinh dang!";
+        }
+        
+    } while (choose != 'N' && choose != 'Y');
+    if (choose == 'Y')
     {
-        cout << "\nBuoc thu: " << i;
-        cout << "\n";
+        string infor_text;
+        string infor_key;
+        do
+        {
+            cout << "\nNhap thong tin ban can ma hoa(y/c:128bit) : ";
+            cin >> infor_text ;
+            cout << "\nDat khoa (y/c:128bit): ";
+            cin >> infor_key;
+            if (infor_text.length() != 32 | infor_key.length() != 32)
+            {
+                cout << "\nLoi : chuoi chua du 128 bit";
+                cout << "\nYeu can nhap lai!";
+            }
+        } while (infor_text.length() != 32 & infor_key.length() != 32);
+             
+        text = infor_text;
+        key  = infor_key;
+        for (int i = 0; i < 4; i++)
+        {
+            string cut_text = text.substr(i*8,8); // Cat chuoi 8 ki tu trong mang text_check
+            words[i] = static_cast<uint32_t>(stoul(cut_text,nullptr,16));
+
+
+        }
+        for (int j = 0; j < 4; j++)
+        {
+            string cut_key = key.substr(j*8,8); // Cat chuoi 8 ki tu trong mang text_check
+            keys[j] = static_cast<uint32_t>(stoul(cut_key,nullptr,16));
+        }
+     
+        XOR_text(words,keys,results);
+        in_ketqua(results,"hien thi ket qua khoi tao : ");
+        // Thuat toan ma hoa AES
+        for (int i = 1; i < 10; i++)
+        {
+            cout << "\nBuoc thu: " << i;
+            cout << "\n";
+            subBytes(results);
+            in_ketqua(results,"Ket qua subBytes: ");
+            shiftRows(results);
+            in_ketqua(results,"Ket qua shiftRows: ");
+            mixColumns(results);
+            in_ketqua(results,"Ket qua mixColumns: ");
+            AddRoundKey(keys,i);
+            in_ketqua(keys,"Ket qua AddRoundkey: ");
+            XOR_text(results,keys,results);
+            in_ketqua(results,"Ket qua lan tiep theo :");
+
+
+
+        }
+        // Buoc thu 10
+        cout << "\nBuoc 10 \n";
         subBytes(results);
         in_ketqua(results,"Ket qua subBytes: ");
         shiftRows(results);
         in_ketqua(results,"Ket qua shiftRows: ");
-        mixColumns(results);
-        in_ketqua(results,"Ket qua mixColumns: ");
-        AddRoundKey(keys,i);
+        AddRoundKey(keys,10);
         in_ketqua(keys,"Ket qua AddRoundkey: ");
         XOR_text(results,keys,results);
-        in_ketqua(results,"Ket qua lan tiep theo :");
-
-
+        // Hien thi ket qua ma hoa
+        cout << "\n Thong tin : " << text;
+        cout << "\n Khoa      : " << key;
+        stringstream ss;
+        for (int i = 0; i < 4; i++)
+        {
+            ss << hex << uppercase << setfill('0') << setw(8) << results[i];
+        }
+        cout << "\ncipher    : " << ss.str();
 
     }
-    // Buoc thu 10
-    cout << "\nBuoc 10 \n";
-    subBytes(results);
-    in_ketqua(results,"Ket qua subBytes: ");
-    shiftRows(results);
-    in_ketqua(results,"Ket qua shiftRows: ");
-    AddRoundKey(keys,10);
-    in_ketqua(keys,"Ket qua AddRoundkey: ");
-    XOR_text(results,keys,results);
-    // Hien thi ket qua ma hoa
-    cout << "\n Thong tin : " << text;
-    cout << "\n Khoa      : " << key;
-    stringstream ss;
-    for (int i = 0; i < 4; i++)
+    else
     {
-        ss << hex << uppercase << setfill('0') << setw(8) << results[i];
+        string infor_ciphertext;
+        string infor_key;
+        uint32_t cipher_text[4];
+        uint32_t Khoa_GiaiMa[10][4];
+        uint32_t IM_key[4];
+        do
+        {
+            cout << "\nNhap doan ma can giai ma (y/c:128bit) : ";
+            cin >> infor_ciphertext ;
+            cout << "\nDat khoa (y/c:128bit): ";
+            cin >> infor_key;
+            if (infor_ciphertext.length() != 32 | infor_key.length() != 32)
+            {
+                cout << "\nLoi : chuoi chua du 128 bit";
+                cout << "\nYeu can nhap lai!";
+            }
+            
+        } while (infor_ciphertext.length() != 32 & infor_key.length() != 32 );
+         for (int i = 0; i < 4; i++)
+        {
+            string cut_text = infor_ciphertext.substr(i*8,8); // Cat chuoi 8 ki tu trong mang text_check
+            cipher_text[i] = static_cast<uint32_t>(stoul(cut_text,nullptr,16));
+
+
+        }
+        for (int j = 0; j < 4; j++)
+        {
+            string cut_key = infor_key.substr(j*8,8); // Cat chuoi 8 ki tu trong mang text_check
+            keys[j] = static_cast<uint32_t>(stoul(cut_key,nullptr,16));
+        }
+    
+
+        for (int i = 0; i < 4; i++)
+        {
+            results[i] = cipher_text[i];
+            IM_key[i] = keys[i];
+        }
+        for (int i = 1; i <= 10; i++)
+        {
+            AddRoundKey(IM_key,i);
+            for (int j = 0; j < 4; j++)
+            {
+            
+                Khoa_GiaiMa[i-1][j] = IM_key[j];
+            }
+            
+        }
+        for (int i = 0; i < 10; i++)
+        {
+            cout << "\nVong " << i+1 << " :";
+            for (int j = 0; j < 4; j++)
+            {
+                cout << hex << uppercase << Khoa_GiaiMa[i][j];
+            }
+            
+        }
+        cout << "\nBuoc thu 10 :\n";
+        XOR_text(cipher_text,Khoa_GiaiMa[9],cipher_text);
+        in_ketqua(cipher_text,"Ciphertext sau khi XOR AddRoundKey truoc do: ");
+        invShiftRows(cipher_text);
+        in_ketqua(cipher_text,"Ciphertext Sau khi invShiftRows truoc do: ");
+        invSubBytes(cipher_text);
+        in_ketqua(cipher_text,"Ciphertext Sau phep invSubBytes : ");
+        for (int i = 9; i>0; i--)
+        {
+            cout << "Buoc thu " << i << ":\n";
+            XOR_text(cipher_text,Khoa_GiaiMa[i-1],cipher_text);
+            in_ketqua(cipher_text,"Ciphertext sau khi XOR AddRoundKey truoc do: ");
+            invMixColumns(cipher_text);
+            in_ketqua(cipher_text,"Ciphertext Sau khi phep MixColumns : ");
+            invShiftRows(cipher_text);
+            in_ketqua(cipher_text,"Ciphertext Sau khi invShiftRows truoc do: ");
+            invSubBytes(cipher_text);
+            in_ketqua(cipher_text,"Ciphertext Sau phep invSubBytes : ");
+        }
+        XOR_text(cipher_text,keys,cipher_text);
+        in_ketqua(keys,"Khoa ban dau : ");
+        in_ketqua(cipher_text,"Thong tin sau giai ma: ");
+        // Hien thi ket qua ma hoa
+        cout << "\n Cipher text : " << infor_ciphertext;
+        cout << "\n Khoa        : " << infor_key;
+        stringstream sss;
+        for (int i = 0; i < 4; i++)
+        {
+            sss << hex << uppercase << setfill('0') << setw(8) << cipher_text[i];
+        }
+        cout << "\nThong tin sau giai ma    : " << sss.str();
+        
     }
-    cout << "\ncipher    : " << ss.str();
+    
+    
+    
+    // uint32_t Khoa_GiaiMa[10][4];
+    // uint32_t IM_key[4];
+    // if (!khoitao())
+    // {
+    //     cout << "\nDau vao khong hop le!";
+    //     return 0;
+    // }
+    // uint32_t cipher_text[4] = {0x3925841D,0x02DC09FB,0xDC118597,0x196A0B32};
+    // for (int i = 0; i < 4; i++)
+    // {
+    //     results[i] = cipher_text[i];
+    //     IM_key[i] = keys[i];
+    // }
+    // for (int i = 1; i <= 10; i++)
+    // {
+    //     AddRoundKey(IM_key,i);
+    //     for (int j = 0; j < 4; j++)
+    //     {
+          
+    //         Khoa_GiaiMa[i-1][j] = IM_key[j];
+    //     }
+           
+    // }
+    // for (int i = 0; i < 10; i++)
+    // {
+    //     cout << "\nVong " << i+1 << " :";
+    //     for (int j = 0; j < 4; j++)
+    //     {
+    //         cout << hex << uppercase << Khoa_GiaiMa[i][j];
+    //     }
+        
+    // }
+    // XOR_text(cipher_text,Khoa_GiaiMa[9],cipher_text);
+    // invShiftRows(cipher_text);
+    // invSubBytes(cipher_text);
+    // in_ketqua(cipher_text,"Sau phep invshiftrow : ");
+    // for (int i = 9; i>0; i--)
+    // {
+    //     cout << "Buoc thu " << i << ":\n";
+    //     XOR_text(cipher_text,Khoa_GiaiMa[i-1],cipher_text);
+    //     invMixColumns(cipher_text);
+    //     invShiftRows(cipher_text);
+    //     invSubBytes(cipher_text);
+    //     in_ketqua(cipher_text,"Ket qua lui lai : ");
+    // }
+    // XOR_text(cipher_text,keys,cipher_text);
+    // in_ketqua(keys,"Khoa ban dau : ");
+    // in_ketqua(cipher_text,"Thong tin sau giai ma: ");
+    
+    
+    
+    // XOR_text(cipher_text,keys,cipher_text);
+    // AddRoundKey(keys,9);
+    // in_ketqua(keys,"Ket qua :");
+    
+    
 
-    // uint32_t text1 = 0x2B9563B9;
-    // //cout << hex << uppercase << rotWord(text1);
-    // uint32_t text2 = 0x10000000;
-    // uint32_t test[4] = {0x2B7E1516,0x28AED2A6,0xABF71588,0x09CF4F3C};
-    // AddRoundKey(test,1);
-    // in_ketqua(test);
 
 
-    //cout << hex << uppercase << XOR_32bit(text1,text2);
+
+
+    // string infor_text;
+    // string infor_key;
+    // cout << "\nNhap thong tin ban can ma hoa(y/c:128bit) : ";
+    // cin >> infor_text ;
+    // cout << "\nDat khoa (y/c:128bit): ";
+    // cin >> infor_key;
+    // text = infor_text;
+    // key  = infor_key;
+    // if (!khoitao())
+    // {
+    //     cout << "\nDau vao khong hop le!";
+    //     return 0;
+    // }
+    // XOR_text(words,keys,results);
+    // in_ketqua(results,"hien thi ket qua khoi tao : ");
+    // // Thuat toan ma hoa AES
+    // for (int i = 1; i < 10; i++)
+    // {
+    //     cout << "\nBuoc thu: " << i;
+    //     cout << "\n";
+    //     subBytes(results);
+    //     in_ketqua(results,"Ket qua subBytes: ");
+    //     shiftRows(results);
+    //     in_ketqua(results,"Ket qua shiftRows: ");
+    //     mixColumns(results);
+    //     in_ketqua(results,"Ket qua mixColumns: ");
+    //     AddRoundKey(keys,i);
+    //     in_ketqua(keys,"Ket qua AddRoundkey: ");
+    //     XOR_text(results,keys,results);
+    //     in_ketqua(results,"Ket qua lan tiep theo :");
+
+
+
+    // }
+    // // Buoc thu 10
+    // cout << "\nBuoc 10 \n";
+    // subBytes(results);
+    // in_ketqua(results,"Ket qua subBytes: ");
+    // shiftRows(results);
+    // in_ketqua(results,"Ket qua shiftRows: ");
+    // AddRoundKey(keys,10);
+    // in_ketqua(keys,"Ket qua AddRoundkey: ");
+    // XOR_text(results,keys,results);
+    // // Hien thi ket qua ma hoa
+    // cout << "\n Thong tin : " << text;
+    // cout << "\n Khoa      : " << key;
+    // stringstream ss;
+    // for (int i = 0; i < 4; i++)
+    // {
+    //     ss << hex << uppercase << setfill('0') << setw(8) << results[i];
+    // }
+    // cout << "\ncipher    : " << ss.str();
+
 
 
 

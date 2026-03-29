@@ -1,6 +1,4 @@
 #include "../main.h"
-using namespace std;
-using namespace std;
 
 void shiftRows(uint32_t w[4]) {
 
