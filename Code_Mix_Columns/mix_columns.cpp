@@ -1,4 +1,7 @@
-#include "main.h"
+#include "../main.h"
+// #include <iostream>
+// #include <iomanip>
+// using namespace std;
 constexpr uint8_t gm2(uint8_t x) { return (x << 1) ^ ((x & 0x80) ? 0x1b : 0x00); }
 constexpr uint8_t gm3(uint8_t x) { return gm2(x) ^ x; }
 constexpr uint8_t gm4(uint8_t x) { return gm2(gm2(x)); }
@@ -53,3 +56,18 @@ void invMixColumns(uint32_t state[4]) {
                    (static_cast<uint32_t>(r3));
     }
 }
+// void in_ketqua(uint32_t x[4],const string& text)
+// {
+//     cout << text << "\n";
+//     for (int i = 0; i < 4; i++)
+//     {
+//         cout << "0x" << hex << uppercase << setfill('0') << setw(8)<< x[i];
+//         cout << "\n";
+//     }
+    
+// }
+// int main()
+// {
+//     uint32_t w[4] = {0xD4BF5D30,0xE0B452AE,0xB84111F1,0x1E2798E5};
+//     in_ketqua(w,"mix :");
+// }

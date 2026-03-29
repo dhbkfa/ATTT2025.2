@@ -2,13 +2,20 @@
 #include <cstdint>
 #include <string>
 #include <stdint.h>
+#include <iomanip>
+#include <sstream>
 #include "main.h"
 using namespace std;
+/*Xac dinh yeu cau : Ma hoa theo AES
+    + test: 3243F6A8 885A308D 313198A2 E0370734
+    + Key : 2B7E1516 28AED2A6 ABF71588 09CF4F3C
+    +Output:3925841D 02DC09FB ABF71588 196A0B32
+*/ 
 string text = "3243F6A8885A308D313198A2E0370734";
-string key = "3243F6A8885A308D313198A2E0370734";
+string key = "2B7E151628AED2A6ABF7158809CF4F3C";
 uint32_t words[4];
 uint32_t keys[4];
-uint32_t result[4];
+uint32_t results[4];
 const uint32_t Rcon[] = {
     0x00000000, // so 0 (khong dung)
     0x01000000, // j = 1
@@ -22,8 +29,6 @@ const uint32_t Rcon[] = {
     0x1B000000, // j = 9
     0x36000000  // j = 10
 };
-// Khai bao ham 
-void Xuli_keyOneLoop(uint32_t key[4]);
 // Dich trai 1 byte
 uint32_t rotWord(uint32_t x)
 {
@@ -34,11 +39,17 @@ inline uint32_t XOR_32bit(uint32_t text1,uint32_t text2)
 {
     return (text1 ^ text2);
 }
-/*Xac dinh yeu cau : Ma hoa theo AES
-    + test: 3243F6A8 885A308D 313198A2 E0370734
-    + Key : 2B7E1516 28AED2A6 ABF71588 09CF4F3C
-    +Output:3925841D 02DC09FB ABF71588 196A0B32
-*/ 
+void XOR_text(uint32_t text1[4],uint32_t text2[4],uint32_t result[4])
+{
+    for (int i = 0; i < 4; i++)
+    {
+        result[i] = XOR_32bit(text1[i],text2[i]);
+    }
+    
+    
+    
+}
+
 // Tach 8 ki tu trong text thanh 1 gia tri trong mang gom 4 phan tu
 bool khoitao()
  {
@@ -63,16 +74,7 @@ bool khoitao()
 
 
     }
-    // In ra ket qua kiem tra
-    cout << "Word:";
-    for (int i = 0; i < 4; i++)
-    {
-        cout << hex << uppercase << words[i];
-        cout << hex <<  uppercase << keys[i];
-        result[i] = XOR_32bit(words[i],keys[i]);
-
-    }
-    
+    XOR_text(words,keys,results);
     return true;
     
 
@@ -93,7 +95,7 @@ void AddRoundKey(uint32_t key[4],int i)
     key_final = subword(key_final); // the byte
     key_final = XOR_32bit(key_final,Rcon[i]);
     key[0] = XOR_32bit(key_final,key[0]);
-    cout << hex << uppercase << key[0];
+    //cout << hex << uppercase << key[0];
     cout << "\n";
     for (int i = 1; i < 4; i++)
     {
@@ -101,12 +103,12 @@ void AddRoundKey(uint32_t key[4],int i)
     }
     
 }
-void in_ketqua(uint32_t x[4])
+void in_ketqua(uint32_t x[4],const string& text)
 {
-    cout << "\nWord: ";
+    cout << text << "\n";
     for (int i = 0; i < 4; i++)
     {
-        cout << hex << uppercase << x[i];
+        cout << "0x" << hex << uppercase << setfill('0') << setw(8)<< x[i];
         cout << "\n";
     }
     
@@ -119,13 +121,49 @@ int main()
 
 
 
-
-
-
     if (!khoitao())
     {
         return 0;
     }
+    in_ketqua(results,"hien thi ket qua khoi tao : ");
+    // Thuat toan ma hoa AES
+    for (int i = 1; i < 10; i++)
+    {
+        cout << "\nBuoc thu: " << i;
+        cout << "\n";
+        subBytes(results);
+        in_ketqua(results,"Ket qua subBytes: ");
+        shiftRows(results);
+        in_ketqua(results,"Ket qua shiftRows: ");
+        mixColumns(results);
+        in_ketqua(results,"Ket qua mixColumns: ");
+        AddRoundKey(keys,i);
+        in_ketqua(keys,"Ket qua AddRoundkey: ");
+        XOR_text(results,keys,results);
+        in_ketqua(results,"Ket qua lan tiep theo :");
+
+
+
+    }
+    // Buoc thu 10
+    cout << "\nBuoc 10 \n";
+    subBytes(results);
+    in_ketqua(results,"Ket qua subBytes: ");
+    shiftRows(results);
+    in_ketqua(results,"Ket qua shiftRows: ");
+    AddRoundKey(keys,10);
+    in_ketqua(keys,"Ket qua AddRoundkey: ");
+    XOR_text(results,keys,results);
+    // Hien thi ket qua ma hoa
+    cout << "\n Thong tin : " << text;
+    cout << "\n Khoa      : " << key;
+    stringstream ss;
+    for (int i = 0; i < 4; i++)
+    {
+        ss << hex << uppercase << setfill('0') << setw(8) << results[i];
+    }
+    cout << "\ncipher    : " << ss.str();
+
     // uint32_t text1 = 0x2B9563B9;
     // //cout << hex << uppercase << rotWord(text1);
     // uint32_t text2 = 0x10000000;

@@ -1,5 +1,5 @@
 CC = g++
-SRCS	= main.cpp ./SubBytes_Code/SubBytes.cpp ./Shift_Rows_Code/shift_Rows.cpp 
+SRCS	= main.cpp ./SubBytes_Code/SubBytes.cpp ./Shift_Rows_Code/shift_Rows.cpp ./Code_Mix_Columns/mix_columns.cpp
 all: main
 main: $(SRCS)
 	$(CC) -I. -o main $(SRCS)
