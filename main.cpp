@@ -72,14 +72,6 @@ bool khoitao()
         result[i] = XOR_32bit(words[i],keys[i]);
 
     }
-    cout << "\nresult:";
-    for (int i = 0; i < 4; i++)
-    {
-        cout << hex << uppercase << result[i];
-    }
-    
-    cout << "\n";
-    
     
     return true;
     
@@ -88,7 +80,7 @@ bool khoitao()
     
  }
  // Ham xu li khoa tung loop
-void Xuli_keyOneLoop(uint32_t key[4],int i)
+void AddRoundKey(uint32_t key[4],int i)
 {
     uint32_t ImKey[4];
     for (int i = 0; i < 4; i++)
@@ -122,19 +114,28 @@ void in_ketqua(uint32_t x[4])
 
 int main()
 {
-    // if (!khoitao())
-    // {
-    //     return 0;
-    // }
-    uint32_t text1 = 0x2B9563B9;
-    //cout << hex << uppercase << rotWord(text1);
-    uint32_t text2 = 0x10000000;
-    uint32_t test[4] = {0x2B7E1516,0x28AED2A6,0xABF71588,0x09CF4F3C};
-    Xuli_keyOneLoop(test,1);
-    in_ketqua(test);
+
+
+
+
+
+
+
+
+    if (!khoitao())
+    {
+        return 0;
+    }
+    // uint32_t text1 = 0x2B9563B9;
+    // //cout << hex << uppercase << rotWord(text1);
+    // uint32_t text2 = 0x10000000;
+    // uint32_t test[4] = {0x2B7E1516,0x28AED2A6,0xABF71588,0x09CF4F3C};
+    // AddRoundKey(test,1);
+    // in_ketqua(test);
 
 
     //cout << hex << uppercase << XOR_32bit(text1,text2);
+
 
 
   

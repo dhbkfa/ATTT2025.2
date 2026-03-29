@@ -1,5 +1,4 @@
-#include "mix_Columns.hpp"
-
+#include "main.h"
 constexpr uint8_t gm2(uint8_t x) { return (x << 1) ^ ((x & 0x80) ? 0x1b : 0x00); }
 constexpr uint8_t gm3(uint8_t x) { return gm2(x) ^ x; }
 constexpr uint8_t gm4(uint8_t x) { return gm2(gm2(x)); }
@@ -10,7 +9,7 @@ constexpr uint8_t gm0d(uint8_t x) { return gm8(x) ^ gm4(x) ^ x; }
 constexpr uint8_t gm0e(uint8_t x) { return gm8(x) ^ gm4(x) ^ gm2(x); }
 
 // Hàm MixColumns (Mã hóa toàn bộ State 4x32-bit)
-uint32_t* mixColumns(uint32_t state[4]) {
+void mixColumns(uint32_t state[4]) {
     for (int i = 0; i < 4; i++) {
         // 1. Lấy ra 1 cột 32-bit và tách thành 4 byte
         uint32_t col = state[i];
@@ -31,12 +30,11 @@ uint32_t* mixColumns(uint32_t state[4]) {
                    (static_cast<uint32_t>(r2) << 8)  |
                    (static_cast<uint32_t>(r3));
     }
-    // Trả về con trỏ mảng để có thể lồng hàm: FuncB(mixColumns(state))
-    return state;
+ 
 }
 
 // Hàm InvMixColumns (Giải mã toàn bộ State 4x32-bit)
-uint32_t* invMixColumns(uint32_t state[4]) {
+void invMixColumns(uint32_t state[4]) {
     for (int i = 0; i < 4; i++) {
         uint32_t col = state[i];
         uint8_t a0 = (col >> 24) & 0xFF;
@@ -54,5 +52,4 @@ uint32_t* invMixColumns(uint32_t state[4]) {
                    (static_cast<uint32_t>(r2) << 8)  |
                    (static_cast<uint32_t>(r3));
     }
-    return state;
 }
