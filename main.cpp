@@ -120,9 +120,17 @@ int main()
 
 
 
-
+    string infor_text;
+    string infor_key;
+    cout << "\nNhap thong tin ban can ma hoa(y/c:128bit) : ";
+    cin >> infor_text ;
+    cout << "\nDat khoa (y/c:128bit): ";
+    cin >> infor_key;
+    text = infor_text;
+    key  = infor_key;
     if (!khoitao())
     {
+        cout << "\nDau vao khong hop le!";
         return 0;
     }
     in_ketqua(results,"hien thi ket qua khoi tao : ");
