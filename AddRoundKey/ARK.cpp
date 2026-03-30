@@ -2,7 +2,7 @@
 #include <cstdint>
 #include <iomanip>
 
-// 1. Hàm ghép 4 byte thành 1 word 32-bit (Đại diện cho 1 Cột trong State)
+// Hàm ghép 4 byte thành 1 word 32-bit (Đại diện cho 1 Cột trong State)
 // Chuẩn FIPS-197 AES: b0 là byte trên cùng của cột (MSB), b3 là byte dưới cùng (LSB)
 uint32_t packBytesToWord(uint8_t b0, uint8_t b1, uint8_t b2, uint8_t b3) {
     return (static_cast<uint32_t>(b0) << 24) |
@@ -11,7 +11,7 @@ uint32_t packBytesToWord(uint8_t b0, uint8_t b1, uint8_t b2, uint8_t b3) {
            (static_cast<uint32_t>(b3));
 }
 
-// 2. Hàm AddRoundKey siêu tốc: XOR 4 word 32-bit thay vì 16 byte
+// Hàm AddRoundKey siêu tốc: XOR 4 word 32-bit thay vì 16 byte
 // Đầu vào lúc này là mảng 4 phần tử 32-bit (chính là 4 cột của ma trận State)
 void AddRoundKey(uint32_t state[4], const uint32_t roundKey[4]) {
     for (int i = 0; i < 4; i++) {
@@ -33,7 +33,7 @@ void printStateAsHex(const uint32_t state[4], const char* label) {
 int main() {
     // TEST VECTOR CHUẨN TỪ NIST (AES-128, Round 0)
     
-    // 1. Giả sử đây là luồng 16 byte dữ liệu thô ban đầu (Plaintext)
+    //luồng 16 byte dữ liệu thô ban đầu (Plaintext)
     uint8_t rawState[16] = {
         0x00, 0x11, 0x22, 0x33, // Cột 0
         0x44, 0x55, 0x66, 0x77, // Cột 1
@@ -41,7 +41,7 @@ int main() {
         0xCC, 0xDD, 0xEE, 0xFF  // Cột 3
     };
 
-    // 2. Luồng 16 byte Khóa gốc (Cipher Key)
+    //Luồng 16 byte Khóa gốc (Cipher Key)
     uint8_t rawKey[16] = {
         0x00, 0x01, 0x02, 0x03, // Cột 0
         0x04, 0x05, 0x06, 0x07, // Cột 1
@@ -53,7 +53,7 @@ int main() {
     uint32_t state[4];
     uint32_t roundKey[4];
 
-    // BƯỚC ĐÓNG GÓI (PACKING): Gom 16 byte thành 4 cột 32-bit
+    //ĐÓNG GÓI (PACKING): Gom 16 byte thành 4 cột 32-bit
     for (int i = 0; i < 4; i++) {
         // Lấy 4 byte liên tiếp ghép thành 1 word
         state[i] = packBytesToWord(rawState[i*4], rawState[i*4 + 1], rawState[i*4 + 2], rawState[i*4 + 3]);
@@ -64,7 +64,7 @@ int main() {
     printStateAsHex(state, "State ban dau");
     printStateAsHex(roundKey, "Round Key");
 
-    // BƯỚC THỰC THI CHÍNH
+    
     AddRoundKey(state, roundKey);
 
     std::cout << "\n--- SAU KHI AddRoundKey ---\n";
