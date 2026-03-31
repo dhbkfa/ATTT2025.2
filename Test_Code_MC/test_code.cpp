@@ -17,9 +17,6 @@ void print_result(const std::string& test_name, bool passed) {
               << (passed ? "[ PASS ]" : "[ FAIL ]") << "\n";
 }
 
-// ---------------------------------------------------------
-// DANH SÁCH 10 TEST CASES
-// ---------------------------------------------------------
 
 // Test 1: Kiểm tra hàm mã hóa MixColumns với dữ liệu chuẩn FIPS-197
 void test01_fips_forward() {
