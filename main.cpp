@@ -5,7 +5,13 @@
 #include <iomanip>
 #include <sstream>
 #include <cctype>
-#include "main.h"
+
+#include "AddRoundKey/ARK.h"
+#include "Code_Mix_Columns/mix_columns.h"
+#include "Key_Expansion/KeyExpansion.h"
+#include "Shift_Rows_Code/shift_Rows.h"
+#include "SubBytes_Code/SubBytes.h"
+
 using namespace std;
 /*Xac dinh yeu cau : Ma hoa theo AES
     + test: 3243F6A8 885A308D 313198A2 E0370734
@@ -20,62 +26,7 @@ string key;
 uint32_t words[4];
 uint32_t keys[4];
 uint32_t results[4];
-const uint32_t Rcon[] = {
-    0x00000000, // so 0 (khong dung)
-    0x01000000, // j = 1
-    0x02000000, // j = 2
-    0x04000000, // j = 3
-    0x08000000, // j = 4
-    0x10000000, // j = 5
-    0x20000000, // j = 6
-    0x40000000, // j = 7
-    0x80000000, // j = 8
-    0x1B000000, // j = 9
-    0x36000000  // j = 10
-};
-// Dich trai 1 byte
-uint32_t rotWord(uint32_t x)
-{
-    return ((x << 8) | (x >> 24));
-}
-// XOR 2 text 32 bit
-inline uint32_t XOR_32bit(uint32_t text1,uint32_t text2)
-{
-    return (text1 ^ text2);
-}
 
-void AddRoundKey(uint32_t text1[4],uint32_t text2[4],uint32_t result[4])
-{
-    for (int i = 0; i < 4; i++)
-    {
-        result[i] = XOR_32bit(text1[i],text2[i]);
-    }
-    
-    
-    
-}
- // Ham xu li khoa tung loop
-void Expansion_key(uint32_t key[4],int i)
-{
-    uint32_t ImKey[4];
-    for (int i = 0; i < 4; i++)
-    {
-        ImKey[i] = key[i];
-    }
-    
-    uint32_t key_final = key[3];
-    key_final = rotWord(key_final); // dich sang trai 1 byte
-    key_final = subword(key_final); // the byte
-    key_final = XOR_32bit(key_final,Rcon[i]);
-    key[0] = XOR_32bit(key_final,key[0]);
-    //cout << hex << uppercase << key[0];
-    cout << "\n";
-    for (int i = 1; i < 4; i++)
-    {
-        key[i] = XOR_32bit(key[i-1],ImKey[i]);
-    }
-    
-}
 void in_ketqua(uint32_t x[4],const string& text)
 {
     cout << text << "\n";
@@ -96,6 +47,7 @@ bool CheckDinhDangdulieu(const string& str)
    return str.find_first_not_of("0123456789ABCDEFabcdef") != string::npos;
     
 }
+
 int main()
 {
     char choose;
@@ -154,7 +106,8 @@ int main()
             keys[j] = static_cast<uint32_t>(stoul(cut_key,nullptr,16));
         }
      
-        AddRoundKey(words,keys,results);
+        for (int i = 0; i < 4; i++) results[i] = words[i];
+        AddRoundKey(results,keys);
         in_ketqua(results,"hien thi ket qua khoi tao : ");
         // Thuat toan ma hoa AES
         for (int i = 1; i < 10; i++)
@@ -169,10 +122,8 @@ int main()
             in_ketqua(results,"Ket qua mixColumns: ");
             Expansion_key(keys,i);
             in_ketqua(keys,"Ket qua Sau khi mo rong : ");
-            AddRoundKey(results,keys,results);
+            AddRoundKey(results,keys);
             in_ketqua(results,"Ket qua lan tiep theo :");
-
-
 
         }
         // Buoc thu 10
@@ -183,7 +134,7 @@ int main()
         in_ketqua(results,"Ket qua shiftRows: ");
         Expansion_key(keys,10);
         in_ketqua(keys,"Ket qua Sau khi mo rong : ");
-        AddRoundKey(results,keys,results);
+        AddRoundKey(results,keys);
         // Hien thi ket qua ma hoa
         cout << "\n Thong tin : " << text;
         cout << "\n Khoa      : " << key;
@@ -264,7 +215,7 @@ int main()
             
         }
         cout << "\nBuoc thu 10 :\n";
-        AddRoundKey(cipher_text,Khoa_GiaiMa[9],cipher_text);
+        AddRoundKey(cipher_text,Khoa_GiaiMa[9]);
         in_ketqua(cipher_text,"Ciphertext sau khi XOR  truoc do: ");
         invShiftRows(cipher_text);
         in_ketqua(cipher_text,"Ciphertext Sau khi invShiftRows truoc do: ");
@@ -273,7 +224,7 @@ int main()
         for (int i = 9; i>0; i--)
         {
             cout << "Buoc thu " << i << ":\n";
-            AddRoundKey(cipher_text,Khoa_GiaiMa[i-1],cipher_text);
+            AddRoundKey(cipher_text,Khoa_GiaiMa[i-1]);
             in_ketqua(cipher_text,"Ciphertext sau khi XOR AddRoundKey truoc do: ");
             invMixColumns(cipher_text);
             in_ketqua(cipher_text,"Ciphertext Sau khi phep MixColumns : ");
@@ -282,7 +233,7 @@ int main()
             invSubBytes(cipher_text);
             in_ketqua(cipher_text,"Ciphertext Sau phep invSubBytes : ");
         }
-        AddRoundKey(cipher_text,keys,cipher_text);
+        AddRoundKey(cipher_text,keys);
         in_ketqua(keys,"Khoa ban dau : ");
         in_ketqua(cipher_text,"Thong tin sau giai ma: ");
         // Hien thi ket qua ma hoa
@@ -295,9 +246,5 @@ int main()
         }
         cout << "\nThong tin sau giai ma    : " << sss.str();
         
-    }
-    
-    
-
-  
+    } 
 }
