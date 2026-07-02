@@ -1,24 +1,12 @@
-/**
- * @file mix_columns.h
- * @brief Định nghĩa các hàm MixColumns và InvMixColumns cho thuật toán AES.
- * @version 1.0
- */
-
-#ifndef MIX_COLUMNS_H
-#define MIX_COLUMNS_H
+#ifndef MIX_COLUMNS_CORE_H
+#define MIX_COLUMNS_CORE_H
 
 #include <stdint.h>
 
-/**
- * @brief Thực hiện phép biến đổi MixColumns trên State.
- * @param state Mảng 4 phần tử 32-bit đại diện cho State matrix.
- */
-void mixColumns(uint32_t state[4]);
+uint8_t getByte(uint32_t word, int byte_index);
+uint32_t packBytes(uint8_t b0, uint8_t b1, uint8_t b2, uint8_t b3);
 
-/**
- * @brief Thực hiện phép biến đổi InvMixColumns (giải mã) trên State.
- * @param state Mảng 4 phần tử 32-bit đại diện cho State matrix.
- */
+void mixColumns(uint32_t state[4]);
 void invMixColumns(uint32_t state[4]);
 
-#endif // MIX_COLUMNS_H
+#endif
